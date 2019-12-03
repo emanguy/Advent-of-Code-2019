@@ -1,6 +1,5 @@
 package io.cloudtamer.adventofcode.lib.day3
 
-import java.lang.IllegalArgumentException
 import kotlin.math.abs
 
 data class Point(val x: Int, val y: Int) {
@@ -9,9 +8,7 @@ data class Point(val x: Int, val y: Int) {
             this.x - from.x,
             this.y - from.y
         )
-        return abs(normalizedPoint.x) + abs(
-            normalizedPoint.y
-        )
+        return abs(normalizedPoint.x) + abs(normalizedPoint.y)
     }
 
     operator fun plus(instruction: Instruction): Point {

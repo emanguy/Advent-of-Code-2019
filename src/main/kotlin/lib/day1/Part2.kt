@@ -1,10 +1,7 @@
 package io.cloudtamer.adventofcode.lib.day1
 
 fun getTotalFuelIncludingFuel(masses: List<Int>): Int {
-    return masses.fold(0) { totalFuel, currentMass -> totalFuel + getFuelForMass(
-        currentMass
-    )
-    }
+    return masses.fold(0) { totalFuel, currentMass -> totalFuel + getFuelForMass(currentMass) }
 }
 
 fun getFuelForMass(mass: Int): Int {

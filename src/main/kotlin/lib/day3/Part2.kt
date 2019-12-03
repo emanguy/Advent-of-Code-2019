@@ -41,14 +41,8 @@ fun getShortestPathPoint(pointsA: List<Point>, pointsB: List<Point>): DistancePo
     val (vertSegmentsA, horizSegmentsA) = segmentsA.partition { it.lineSegment[0].x == it.lineSegment[1].x }
     val (vertSegmentsB, horizSegmentsB) = segmentsB.partition { it.lineSegment[0].x == it.lineSegment[1].x }
 
-    val allIntersectionsWithDistances = getIntersectionsWithDistance(
-        horizSegmentsA,
-        vertSegmentsB
-    ) +
-            getIntersectionsWithDistance(
-                horizSegmentsB,
-                vertSegmentsA
-            )
+    val allIntersectionsWithDistances = getIntersectionsWithDistance(horizSegmentsA, vertSegmentsB) +
+            getIntersectionsWithDistance(horizSegmentsB, vertSegmentsA)
     return allIntersectionsWithDistances.minBy { it.totalDistanceToPoint }
 }
 
