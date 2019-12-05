@@ -79,6 +79,8 @@ fun processProgram(data: List<Int>, debug: Boolean = false): List<Int> {
     evalLoop@ while (true) {
         val opcode = Opcode.fromMemory(memory, instructionPointer)
         var performedJump = false
+        // For debugging
+        val currentInstructionPointer = instructionPointer
 
         val genericInstruction: ParameterSet = when (opcode.code) {
             // ADD
@@ -147,7 +149,7 @@ fun processProgram(data: List<Int>, debug: Boolean = false): List<Int> {
             else -> throw IllegalArgumentException("Unrecognized opcode: $opcode! Instruction pointer @ $instructionPointer")
         }
 
-        if (debug) println("Instruction Pointer: $instructionPointer Performing operation: $opcode with inputs: $genericInstruction")
+        if (debug) println("Instruction Pointer: $currentInstructionPointer Performing operation: $opcode with inputs: $genericInstruction")
         if (!performedJump) instructionPointer += genericInstruction.instructionWidth
     }
 
