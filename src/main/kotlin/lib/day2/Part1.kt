@@ -62,7 +62,13 @@ data class IOParams(val memTarget: Int) : ParameterSet(2) {
     }
 }
 
-data class IntcodeOutput(val memory: List<Int>, val outputs: List<Int>, val instructionPtr: Int, val complete: Boolean = true) {
+data class IntcodeOutput(
+    val memory: List<Int>,
+    val outputs: List<Int>,
+    val remainingInputs: List<Int>,
+    val instructionPtr: Int,
+    val complete: Boolean = true
+) {
     val firstOutput: Int?
         get() = outputs.firstOrNull()
 }
@@ -87,7 +93,7 @@ fun processProgram(data: List<Int>, intcodeInputs: List<Int> = emptyList(), star
     val inputQueue = intcodeInputs.toMutableList()
     val outputs = mutableListOf<Int>()
     var instructionPointer = startAtInstruction
-    if (instructionPointer !in data.indices) return IntcodeOutput(memory, outputs, instructionPointer)
+    if (instructionPointer !in data.indices) return IntcodeOutput(memory, outputs, inputQueue, instructionPointer)
 
     evalLoop@ while (true) {
         val opcode = Opcode.fromMemory(memory, instructionPointer)
@@ -113,7 +119,7 @@ fun processProgram(data: List<Int>, intcodeInputs: List<Int> = emptyList(), star
                 if (debug) println("Instruction pointer: $instructionPointer performing a read operation.")
                 // Suspend the program if we need more input
                 if (inputQueue.isEmpty()) {
-                    return IntcodeOutput(memory, outputs, instructionPointer, false)
+                    return IntcodeOutput(memory, outputs, inputQueue, instructionPointer, false)
                 }
                 val userInput = inputQueue.removeAt(0)
                 val programInput = IOParams.fromMemory(memory, instructionPointer)
@@ -171,5 +177,5 @@ fun processProgram(data: List<Int>, intcodeInputs: List<Int> = emptyList(), star
         if (debug) println("Instruction pointer moved to $instructionPointer")
     }
 
-    return IntcodeOutput(memory, outputs, instructionPointer)
+    return IntcodeOutput(memory, outputs, inputQueue, instructionPointer)
 }

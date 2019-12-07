@@ -4,8 +4,8 @@ import io.cloudtamer.adventofcode.lib.day2.IntcodeOutput
 import io.cloudtamer.adventofcode.lib.day2.processProgram
 
 fun feedbackAmplify(program: List<Int>, inputSet: List<Int>): Int {
-    var mostRecentFinalAmpOutput = IntcodeOutput(emptyList(), emptyList(), 0, false)
-    var mostRecentAmpOutput = IntcodeOutput(emptyList(), emptyList(), 0, false)
+    var mostRecentFinalAmpOutput = IntcodeOutput(emptyList(), emptyList(), emptyList(), 0, false)
+    var mostRecentAmpOutput = IntcodeOutput(emptyList(), emptyList(), emptyList(), 0, false)
     // Get a separate memory space for each amplifier and places to store previous instruction pointer to pick up where we left off
     val amplifierMemories = inputSet.map { program.toList() }.toMutableList()
     val amplifierInstructionPointers = inputSet.map { 0 }.toMutableList()
@@ -21,7 +21,7 @@ fun feedbackAmplify(program: List<Int>, inputSet: List<Int>): Int {
             mostRecentAmpOutput = processProgram(amplifierMemories[index], input, startAtInstruction = amplifierInstructionPointers[index])
             amplifierMemories[index] = mostRecentAmpOutput.memory
             amplifierInstructionPointers[index] = mostRecentAmpOutput.instructionPtr
-            amplifierInputs[index] = emptyList()
+            amplifierInputs[index] = mostRecentAmpOutput.remainingInputs
 
             // Save output to next amplifier
             val nextAmpIndex = (index + 1) % amplifierInputs.size
