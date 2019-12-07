@@ -62,6 +62,11 @@ data class IOParams(val memTarget: Int) : ParameterSet(2) {
     }
 }
 
+data class IntcodeOutput(val memory: List<Int>, val outputs: List<Int>, val instructionPtr: Int, val complete: Boolean = true) {
+    val firstOutput: Int?
+        get() = outputs.firstOrNull()
+}
+
 // Input formatted as OP, P1, P2, D (typically)
 // OP = 1 -> D = P1 + P2
 // OP = 2 -> D = P1 * P2
@@ -72,9 +77,17 @@ data class IOParams(val memTarget: Int) : ParameterSet(2) {
 // OP = 7 -> If P1 < P2 D = 1 (true) else D = 0 (false)
 // OP = 8 -> If P1 == P2 D = 1 (true) else D = 0 (false)
 // OP = 99 -> QUIT
-fun processProgram(data: List<Int>, debug: Boolean = false): List<Int> {
+//
+// May exit in one of three cases:
+//   1. Ran out of inputs. Since this returns a snapshot of the memory and the instruction pointer, you can supply these back to this function to "resume". In this case the return will specify the program isn't complete.
+//   2. Hit an EXIT instruction.
+//   3. Was passed an instruction pointer out of range of the data.
+fun processProgram(data: List<Int>, intcodeInputs: List<Int> = emptyList(), startAtInstruction: Int = 0, debug: Boolean = false): IntcodeOutput {
     val memory = data.toMutableList()
-    var instructionPointer = 0
+    val inputQueue = intcodeInputs.toMutableList()
+    val outputs = mutableListOf<Int>()
+    var instructionPointer = startAtInstruction
+    if (instructionPointer !in data.indices) return IntcodeOutput(memory, outputs, instructionPointer)
 
     evalLoop@ while (true) {
         val opcode = Opcode.fromMemory(memory, instructionPointer)
@@ -97,8 +110,12 @@ fun processProgram(data: List<Int>, debug: Boolean = false): List<Int> {
             }
             // Input
             3 -> {
-                print("Program input: ")
-                val userInput = readLine()!!.toInt()
+                if (debug) println("Instruction pointer: $instructionPointer performing a read operation.")
+                // Suspend the program if we need more input
+                if (inputQueue.isEmpty()) {
+                    return IntcodeOutput(memory, outputs, instructionPointer, false)
+                }
+                val userInput = inputQueue.removeAt(0)
                 val programInput = IOParams.fromMemory(memory, instructionPointer)
                 memory[programInput.memTarget] = userInput
                 programInput
@@ -107,7 +124,7 @@ fun processProgram(data: List<Int>, debug: Boolean = false): List<Int> {
             4 -> {
                 val input = IOParams.fromMemory(memory, instructionPointer)
                 val toPrint = opcode.param1Mode.retrieveValue(memory, input.memTarget)
-                println("Program says: $toPrint")
+                outputs += toPrint
                 input
             }
             // Jump if true
@@ -151,7 +168,8 @@ fun processProgram(data: List<Int>, debug: Boolean = false): List<Int> {
 
         if (debug) println("Instruction Pointer: $currentInstructionPointer Performing operation: $opcode with inputs: $genericInstruction")
         if (!performedJump) instructionPointer += genericInstruction.instructionWidth
+        if (debug) println("Instruction pointer moved to $instructionPointer")
     }
 
-    return memory
+    return IntcodeOutput(memory, outputs, instructionPointer)
 }

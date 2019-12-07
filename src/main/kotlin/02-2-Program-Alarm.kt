@@ -15,7 +15,7 @@ fun main() {
         program[1] = input1
         program[2] = input2
 
-        val currentResult = processProgram(program)[0]
+        val currentResult = processProgram(program).memory[0]
 
         when {
             currentResult == target -> break@testLoop
@@ -33,6 +33,6 @@ fun main() {
 
     program[1] = input1
     program[2] = input2
-    val result = processProgram(program)[0]
+    val result = processProgram(program).memory[0]
     println("f($input1, $input2) = $result")
 }
