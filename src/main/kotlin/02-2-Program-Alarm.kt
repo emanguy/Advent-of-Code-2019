@@ -5,12 +5,12 @@ import java.io.File
 
 fun main() {
     val input = File("inputs/02-1-input.txt").readText()
-    val program = input.split(",").map { it.toInt() }.toMutableList()
+    val program = input.split(",").map { it.toLong() }.toMutableList()
 
-    val target = 19690720
-    var lastResult = 0
-    var input1 = 0
-    var input2 = 0
+    val target = 19690720L
+    var lastResult = 0L
+    var input1 = 0L
+    var input2 = 0L
     testLoop@ while (true) {
         program[1] = input1
         program[2] = input2

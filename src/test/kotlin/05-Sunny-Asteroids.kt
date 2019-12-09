@@ -9,74 +9,74 @@ import io.kotlintest.tables.row
 class Day5Tests : FunSpec() {
     init {
         val echoProgram = listOf(
-            3, 0,
-            4, 0,
-            99)
+            3L, 0L,
+            4L, 0L,
+            99L)
         val equals8ProgramPositionMode = listOf(
-            3, 9,
-            8, 9, 10, 9,
-            4, 9,
-            99,
+            3L, 9L,
+            8L, 9L, 10L, 9L,
+            4L, 9L,
+            99L,
             // Data
-            -1, 8)
+            -1L, 8L)
         val lessThan8ProgramPositionMode = listOf(
-            3, 9,
-            7, 9, 10, 9,
-            4, 9,
-            99,
+            3L, 9L,
+            7L, 9L, 10L, 9L,
+            4L, 9L,
+            99L,
             // Data
-            -1, 8)
+            -1L, 8L)
         val equals8ProgramImmediateMode = listOf(
-            3, 3,
-            1108, -1, 8, 3,
-            4, 3,
-            99)
+            3L, 3L,
+            1108L, -1L, 8L, 3L,
+            4L, 3L,
+            99L)
         val lessThan8ProgramImmediateMode = listOf(
-            3, 3,
-            1107, -1, 8, 3,
-            4, 3,
-            99
+            3L, 3L,
+            1107L, -1L, 8L, 3L,
+            4L, 3L,
+            99L
         )
         val jumpOnNonZeroPositionMode = listOf(
-            3, 12,
-            6, 12, 15,
-            1, 13, 14, 13,
-            4, 13,
-            99,
+            3L, 12L,
+            6L, 12L, 15L,
+            1L, 13L, 14L, 13L,
+            4L, 13L,
+            99L,
             // Data
-            -1,0,1,9
+            -1L,0L,1L,9L
         )
         val jumpOnNonZeroImmediateMode = listOf(
-            3, 3,
-            1105, -1, 9,
-            1101, 0, 0, 12,
-            4, 12,
-            99,
+            3L, 3L,
+            1105L, -1L, 9L,
+            1101L, 0L, 0L, 12L,
+            4L, 12L,
+            99L,
             // Data
-            1
+            1L
         )
         val allAroundEight = listOf(
-            3, 21,
-            1008, 21, 8, 20,
-            1005, 20, 22,
-            107, 8, 21, 20,
-            1006, 20, 31,
-            1106, 0, 36,
+            3L, 21L,
+            1008L, 21L, 8L, 20L,
+            1005L, 20L, 22L,
+            107L, 8L, 21L, 20L,
+            1006L, 20L, 31L,
+            1106L, 0L, 36L,
             // Data begin
-            98, 0, 0,
+            98L, 0L, 0L,
             // Data end
-            1002, 21, 125, 20,
-            4, 20,
-            1105, 1, 46,
-            104, 999,
-            1105, 1, 46,
-            1101, 1000, 1, 20,
-            4, 20,
-            1105, 1, 46,
+            1002L, 21L, 125L, 20L,
+            4L, 20L,
+            1105L, 1L, 46L,
+            104L, 999L,
+            1105L, 1L, 46L,
+            1101L, 1000L, 1L, 20L,
+            4L, 20L,
+            1105L, 1L, 46L,
             // Data begin
-            98,
+            98L,
             // Data end
-            99
+            99L
         )
 
         test("Verify opcodes are read correctly") {
@@ -107,7 +107,7 @@ class Day5Tests : FunSpec() {
         }
 
         test("Verify sample programs") {
-            processProgram(echoProgram, intcodeInputs = listOf(5)).outputs shouldBe listOf(5)
+            processProgram(echoProgram, intcodeInputs = listOf(5)).outputs shouldBe listOf<Long>(5)
 
             forall(
                 row(equals8ProgramPositionMode),
@@ -134,9 +134,9 @@ class Day5Tests : FunSpec() {
                 processProgram(program, listOf(5)).firstOutput shouldBe 1
             }
             forall(
-                row(7, 999),
-                row(8, 1000),
-                row(9, 1001)
+                row(7L, 999),
+                row(8L, 1000),
+                row(9L, 1001)
             ) { input, expectedOutput ->
                 processProgram(allAroundEight, listOf(input)).firstOutput shouldBe expectedOutput
             }
