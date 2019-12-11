@@ -89,6 +89,15 @@ class Day10Tests : FunSpec() {
         }
 
         test("Verify test inputs - part 2") {
+            val example = listOf(
+                ".#....#####...#..",
+                "##...##.#####..##",
+                "##...#...#.#####.",
+                "..#.....#...###..",
+                "..#.#.....#....##"
+            )
+            val parsedSampleInput = parseVectorInput(example)
+            getNthVaporizedAsteroid(parsedSampleInput, 18) shouldBe Vector(4, -4)
             val largeInput = listOf(
                 ".#..##.###...#######",
                 "##.############..##.",
@@ -112,7 +121,7 @@ class Day10Tests : FunSpec() {
                 "###.##.####.##.#..##"
             )
             val inputs = parseVectorInput(largeInput)
-            getNthVaporizedAsteroid(inputs, 200) shouldBe Vector(-8, 2)
+            getNthVaporizedAsteroid(inputs, 200) shouldBe Vector(8, -2)
         }
     }
 }

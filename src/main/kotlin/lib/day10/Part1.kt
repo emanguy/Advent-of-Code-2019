@@ -10,7 +10,7 @@ tailrec fun gcd(a: Int, b: Int): Int = if (b == 0) abs(a) else gcd(abs(b), abs(a
 data class Vector(val x: Int, val y: Int) {
     val magnitude: Double by lazy { sqrt((x*x + y*y).toDouble()) }
     val angle: Double by lazy {
-        val angle = atan2(x.toDouble(), y.toDouble())
+        val angle = atan2(y.toDouble(), x.toDouble())
         return@lazy if (angle < 0) angle + 2 * PI else angle
     }
 

@@ -10,7 +10,6 @@ fun getNthVaporizedAsteroid(asteroids: List<Vector>, asteroidN: Int): Vector {
     val asteroidVisibility = getAsteroidVisibility(asteroids)
     val (choiceAsteroidIndex, _) = asteroidVisibility.withIndex().maxBy { it.value } ?: error("No location for station!")
     val choiceAsteroid = asteroids[choiceAsteroidIndex]
-    println(choiceAsteroid)
     val otherAsteroids = asteroids - choiceAsteroid
 
     val classifiedAsteroids = otherAsteroids.groupBy({ (it - choiceAsteroid).identity() }, { it })
@@ -35,7 +34,6 @@ fun getNthVaporizedAsteroid(asteroids: List<Vector>, asteroidN: Int): Vector {
         val currentVectorClass = classes[identityClassIdx]
         // Take the first (closest) vector
         nthBlownUp = currentVectorClass.vectorsOfClass.first()
-        println("The ${it}th asteroid blown up is $nthBlownUp @ ${currentVectorClass.identityVector} from center, angle ${Math.toDegrees(currentVectorClass.identityVector.angle)}")
         // Remove that vector from the class
         classes[identityClassIdx] = currentVectorClass.copy(vectorsOfClass = currentVectorClass.vectorsOfClass - nthBlownUp)
 
