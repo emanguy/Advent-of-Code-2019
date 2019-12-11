@@ -15,15 +15,53 @@ data class Point(val x: Int, val y: Int) {
         val pointDiff = instruction.direction.change * instruction.distance
         return this + pointDiff
     }
+    operator fun plus(direction: Direction): Point {
+        return this + direction.change
+    }
     operator fun plus(difference: Point) = Point(x + difference.x, y + difference.y)
     operator fun times(scalar: Int) = Point(scalar * x, scalar * y)
 }
 
 enum class Direction(val change: Point) {
-    UP(Point(0, 1)),
-    DOWN(Point(0, -1)),
-    LEFT(Point(-1, 0)),
-    RIGHT(Point(1, 0))
+    UP(Point(0, 1)) {
+        override fun turnLeft(): Direction {
+            return LEFT
+        }
+
+        override fun turnRight(): Direction {
+            return RIGHT
+        }
+    },
+    DOWN(Point(0, -1)) {
+        override fun turnLeft(): Direction {
+            return RIGHT
+        }
+
+        override fun turnRight(): Direction {
+            return LEFT
+        }
+    },
+    LEFT(Point(-1, 0)) {
+        override fun turnLeft(): Direction {
+            return DOWN
+        }
+
+        override fun turnRight(): Direction {
+            return UP
+        }
+    },
+    RIGHT(Point(1, 0)) {
+        override fun turnLeft(): Direction {
+            return UP
+        }
+
+        override fun turnRight(): Direction {
+            return DOWN
+        }
+    };
+
+    abstract fun turnLeft(): Direction
+    abstract fun turnRight(): Direction
 }
 
 data class Instruction(val distance: Int, val direction: Direction) {

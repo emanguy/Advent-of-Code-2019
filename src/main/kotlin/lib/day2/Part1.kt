@@ -6,7 +6,7 @@ const val INTCODE_TRUE = 1L
 enum class ParameterMode {
     POSITION {
         override fun retrieveValue(memory: List<Long>, paramValue: Long, relativeBase: Int): Long {
-            return memory[paramValue.toInt()]
+            return memory.getOrElse(paramValue.toInt()) { 0L }
         }
 
         override fun getWriteTarget(paramValue: Int, relativeBase: Int): Int {
@@ -24,7 +24,7 @@ enum class ParameterMode {
     }, // Interpret as literal value
     RELATIVE {
         override fun retrieveValue(memory: List<Long>, paramValue: Long, relativeBase: Int): Long {
-            return memory[relativeBase + paramValue.toInt()]
+            return memory.getOrElse(relativeBase + paramValue.toInt()) { 0L }
         }
 
         override fun getWriteTarget(paramValue: Int, relativeBase: Int): Int {
