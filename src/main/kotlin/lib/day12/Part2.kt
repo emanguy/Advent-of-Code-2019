@@ -24,7 +24,6 @@ fun getEncompassingCycleCount(planets: List<Planet>): Long {
     val cyclesY = getCycleCount(planets) { PositionVelocityPair(it.position.y, it.velocity.y) }
     val cyclesZ = getCycleCount(planets) { PositionVelocityPair(it.position.z, it.velocity.z) }
 
-    println("$cyclesX $cyclesY $cyclesZ")
     val xyLcm = lcmLong(cyclesX.toLong(), cyclesY.toLong())
     val xyzLcm = lcmLong(xyLcm, cyclesZ.toLong())
 
