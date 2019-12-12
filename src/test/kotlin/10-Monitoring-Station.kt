@@ -22,20 +22,20 @@ class Day10Tests : FunSpec() {
         }
 
         test("Verify vector operations") {
-            Vector(1, 2) * 5 shouldBe Vector(5, 10)
-            Vector(1, 2) + Vector (3, 4) shouldBe Vector(4, 6)
-            Vector(3, 4) - Vector(1, 2) shouldBe Vector(2, 2)
-            Vector(6, 12).identity() shouldBe Vector(1, 2)
+            Vector2(1, 2) * 5 shouldBe Vector2(5, 10)
+            Vector2(1, 2) + Vector2 (3, 4) shouldBe Vector2(4, 6)
+            Vector2(3, 4) - Vector2(1, 2) shouldBe Vector2(2, 2)
+            Vector2(6, 12).identity() shouldBe Vector2(1, 2)
 
-            Vector(2, 4).identity() shouldBe Vector(4, 8).identity()
+            Vector2(2, 4).identity() shouldBe Vector2(4, 8).identity()
         }
 
         test("Verify input parser") {
             parseVectorInput(sampleInput) shouldBe listOf(
-                Vector(1, 0), Vector(4, 0),
-                Vector(0, -2), Vector(1, -2), Vector(2, -2), Vector(3, -2), Vector(4, -2),
-                Vector(4, -3),
-                Vector(3, -4), Vector(4, -4)
+                Vector2(1, 0), Vector2(4, 0),
+                Vector2(0, -2), Vector2(1, -2), Vector2(2, -2), Vector2(3, -2), Vector2(4, -2),
+                Vector2(4, -3),
+                Vector2(3, -4), Vector2(4, -4)
             )
         }
 
@@ -97,7 +97,7 @@ class Day10Tests : FunSpec() {
                 "..#.#.....#....##"
             )
             val parsedSampleInput = parseVectorInput(example)
-            getNthVaporizedAsteroid(parsedSampleInput, 18) shouldBe Vector(4, -4)
+            getNthVaporizedAsteroid(parsedSampleInput, 18) shouldBe Vector2(4, -4)
             val largeInput = listOf(
                 ".#..##.###...#######",
                 "##.############..##.",
@@ -121,7 +121,7 @@ class Day10Tests : FunSpec() {
                 "###.##.####.##.#..##"
             )
             val inputs = parseVectorInput(largeInput)
-            getNthVaporizedAsteroid(inputs, 200) shouldBe Vector(8, -2)
+            getNthVaporizedAsteroid(inputs, 200) shouldBe Vector2(8, -2)
         }
     }
 }

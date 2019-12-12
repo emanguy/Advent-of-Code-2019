@@ -2,9 +2,9 @@ package io.cloudtamer.adventofcode.lib.day10
 
 import kotlin.math.PI
 
-data class AsteroidClass(val identityVector: Vector, val vectorsOfClass: List<Vector>)
+data class AsteroidClass(val identityVector: Vector2, val vectorsOfClass: List<Vector2>)
 
-fun getNthVaporizedAsteroid(asteroids: List<Vector>, asteroidN: Int): Vector {
+fun getNthVaporizedAsteroid(asteroids: List<Vector2>, asteroidN: Int): Vector2 {
     require(asteroids.size >= asteroidN)
 
     val asteroidVisibility = getAsteroidVisibility(asteroids)
@@ -24,7 +24,7 @@ fun getNthVaporizedAsteroid(asteroids: List<Vector>, asteroidN: Int): Vector {
     classes = (zeroToNinety.asReversed() + ninetyToThreeSixty.asReversed()).toMutableList()
 
     // N times, go to the next identity vector class and select the first one and drop it
-    var nthBlownUp = Vector(0, 0)
+    var nthBlownUp = Vector2(0, 0)
     var identityClassIdx = 0
     repeat(asteroidN) {
         // Skip this class if there are no vectors left in the class
