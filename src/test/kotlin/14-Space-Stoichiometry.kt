@@ -111,7 +111,17 @@ class Day14Tests : FunSpec() {
                 row(sampleInput5, 2210736)
             ) { sampleInput, expectedResult ->
                 val transforms = parseTransforms(sampleInput)
-                getOresRequiredToMakeFuelWithWaste(transforms) shouldBe expectedResult
+                getOresRequiredToMakeFuelWithWaste(transforms).expendedOre shouldBe expectedResult
+            }
+        }
+        test("Verify sample inputs part 2") {
+            forall(
+                row(sampleInput3, 82892753),
+                row(sampleInput4, 5586022),
+                row(sampleInput5, 460664)
+            ) { sampleInput, expectedResult ->
+                val transforms = parseTransforms(sampleInput)
+                getMaximumFuelOutput(transforms, 1_000_000_000_000L)
             }
         }
     }

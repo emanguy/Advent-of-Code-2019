@@ -1,17 +1,18 @@
 package io.cloudtamer.adventofcode.lib.day14
 
 typealias Symbol = String
-typealias Coefficient = Int
+typealias Coefficient = Long
 typealias Stage = Map<Symbol, Coefficient>
 typealias MutableStage = MutableMap<Symbol, Coefficient>
 
+data class ExpendedOreAndWaste(val expendedOre: Coefficient, val waste: Map<Symbol, Coefficient>)
 data class Component(
     val coefficient: Coefficient,
     val symbol: Symbol
 )
 data class SymbolTransform(val inputs: List<Component>, val output: Component) {
     fun decomposeFrom(component: Component): List<Component> {
-        require(component.coefficient % output.coefficient == 0)
+        require(component.coefficient % output.coefficient == 0L)
         val numOutputsNeeded = component.coefficient / output.coefficient
         return inputs.map { Component(it.coefficient * numOutputsNeeded, it.symbol)}
     }
@@ -28,7 +29,7 @@ fun parseTransforms(rawInputs: List<String>): Map<Symbol, SymbolTransform> {
     val resultingTransformMap = mutableMapOf<Symbol, SymbolTransform>()
     fun stringToComponent(inputStr: String): Component {
         val (coefficientStr, symbol) = inputStr.split(" ")
-        return Component(coefficientStr.toInt(), symbol)
+        return Component(coefficientStr.toLong(), symbol)
     }
 
     for (input in rawInputs) {
@@ -44,12 +45,9 @@ fun parseTransforms(rawInputs: List<String>): Map<Symbol, SymbolTransform> {
     return resultingTransformMap
 }
 
-fun getOresRequiredToMakeFuelWithWaste(
-    availableTransforms: Map<Symbol, SymbolTransform>,
-    previousWaste: Map<Symbol, Coefficient> = emptyMap()
-): Int {
-    var currentStage: Stage =  mapOf("FUEL" to 1)
-    val wastebin = previousWaste.toMutableMap()
+fun getOresRequiredToMakeFuelWithWaste(availableTransforms: Map<Symbol, SymbolTransform>): ExpendedOreAndWaste {
+    var currentStage: Stage =  mapOf("FUEL" to 1L)
+    val wastebin = mutableMapOf<Symbol, Coefficient>()
 
     while (currentStage.keys != setOf("ORE")) {
         val currentComponents = currentStage.entries.map { Component(it.value, it.key) }
@@ -65,7 +63,7 @@ fun getOresRequiredToMakeFuelWithWaste(
             // Find the function that transforms simpler components into this component
             val componentTransform = availableTransforms[component.symbol] ?: error("No transform for ${component.symbol}!!")
             // Find the actual amount of this component necessary
-            val amountRequired = if (component.coefficient % componentTransform.output.coefficient == 0) {
+            val amountRequired = if (component.coefficient % componentTransform.output.coefficient == 0L) {
                 component.coefficient
             } else {
                 val trueCoefficient = nextHighestMultipleOf(factor = componentTransform.output.coefficient, from = component.coefficient)
@@ -86,10 +84,14 @@ fun getOresRequiredToMakeFuelWithWaste(
     }
 
     val oreExpended = currentStage["ORE"] ?: error("Somehow there was no ore at the end.")
-    return oreExpended - calculateWastedOre(availableTransforms, wastebin)
+    val reducedWaste = reduceWaste(availableTransforms, wastebin)
+    val oreSaved = reducedWaste.getOrDefault("ORE", 0)
+    val actualOreExpended = oreExpended - oreSaved
+    val reducedWasteWithoutOre = reducedWaste - "ORE"
+    return ExpendedOreAndWaste(actualOreExpended, reducedWasteWithoutOre)
 }
 
-fun calculateWastedOre(availableTransforms: Map<Symbol, SymbolTransform>, wastebin: Map<Symbol, Coefficient>): Int {
+fun reduceWaste(availableTransforms: Map<Symbol, SymbolTransform>, wastebin: Map<Symbol, Coefficient>): Map<Symbol, Coefficient> {
     var wastebinState = wastebin
 
     while(true) {
@@ -98,7 +100,7 @@ fun calculateWastedOre(availableTransforms: Map<Symbol, SymbolTransform>, wasteb
 
         for ((symbol, coefficient) in wastebinState) {
             if (symbol == "ORE") {
-                newWastebin["ORE"] = coefficient
+                newWastebin["ORE"] = newWastebin.getOrDefault("ORE", 0) + coefficient
                 continue
             }
             val transform = availableTransforms[symbol] ?: error("Transform for symbol $symbol didn't exist!")
@@ -127,7 +129,7 @@ fun calculateWastedOre(availableTransforms: Map<Symbol, SymbolTransform>, wasteb
         if (!performedReduction) break
     }
 
-    return wastebinState["ORE"] ?: 0
+    return wastebinState
 }
 
-fun nextHighestMultipleOf(factor: Int, from: Int) = from + (factor - (from % factor))
+fun nextHighestMultipleOf(factor: Coefficient, from: Coefficient) = from + (factor - (from % factor))
