@@ -13,7 +13,7 @@ fun applyFFTForRealMessage(inputs: List<Int>, generations: Int): List<Int> {
     repeat(generations) {
         val nextGeneration = mutableListOf<Int>()
 
-        for (index in currentGeneration.indices) {
+        repeat(currentGeneration.size * 10_000) { index ->
             val pattern = getPattern(index + 1).drop(1)
             val generatedCoefficients = pattern.take(10000)
                 .chunked(currentGeneration.size)
@@ -23,6 +23,7 @@ fun applyFFTForRealMessage(inputs: List<Int>, generations: Int): List<Int> {
                     }
                     coefficients
                 }
+            println(generatedCoefficients)
             val coefficientPairs = generatedCoefficients.zip(currentGeneration)
             val total = coefficientPairs.fold(0) { currentTotal, (coefficient, generationValue) ->
                 currentTotal + coefficient * generationValue

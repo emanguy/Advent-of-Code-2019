@@ -70,7 +70,7 @@ class Day14Tests : FunSpec() {
             "5 BHXH, 4 VRPVC => 5 LTCX"
         )
         test("Verify input transformation function works") {
-            generateTransforms(sampleInput1) shouldBe mapOf(
+            parseTransforms(sampleInput1) shouldBe mapOf(
                 "A" to SymbolTransform(
                     inputs = listOf(Component(10, "ORE")),
                     output = Component(10, "A")
@@ -110,8 +110,8 @@ class Day14Tests : FunSpec() {
                 row(sampleInput4, 180697),
                 row(sampleInput5, 2210736)
             ) { sampleInput, expectedResult ->
-                val transforms = generateTransforms(sampleInput)
-                getOresRequiredToMakeFuel(transforms) shouldBe expectedResult
+                val transforms = parseTransforms(sampleInput)
+                getOresRequiredToMakeFuelWithWaste(transforms) shouldBe expectedResult
             }
         }
     }

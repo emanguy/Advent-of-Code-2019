@@ -15,9 +15,16 @@ data class SymbolTransform(val inputs: List<Component>, val output: Component) {
         val numOutputsNeeded = component.coefficient / output.coefficient
         return inputs.map { Component(it.coefficient * numOutputsNeeded, it.symbol)}
     }
+
+    override fun toString(): String {
+        val inputString = inputs.map { "${it.coefficient} ${it.symbol}" }.joinToString(", ")
+        val outputString = "${output.coefficient} ${output.symbol}"
+
+        return "$inputString => $outputString"
+    }
 }
 
-fun generateTransforms(rawInputs: List<String>): Map<Symbol, SymbolTransform> {
+fun parseTransforms(rawInputs: List<String>): Map<Symbol, SymbolTransform> {
     val resultingTransformMap = mutableMapOf<Symbol, SymbolTransform>()
     fun stringToComponent(inputStr: String): Component {
         val (coefficientStr, symbol) = inputStr.split(" ")
@@ -37,9 +44,12 @@ fun generateTransforms(rawInputs: List<String>): Map<Symbol, SymbolTransform> {
     return resultingTransformMap
 }
 
-fun getOresRequiredToMakeFuel(availableTransforms: Map<Symbol, SymbolTransform>): Int {
+fun getOresRequiredToMakeFuelWithWaste(
+    availableTransforms: Map<Symbol, SymbolTransform>,
+    previousWaste: Map<Symbol, Coefficient> = emptyMap()
+): Int {
     var currentStage: Stage =  mapOf("FUEL" to 1)
-    val wastebin = mutableMapOf<Symbol, Coefficient>()
+    val wastebin = previousWaste.toMutableMap()
 
     while (currentStage.keys != setOf("ORE")) {
         val currentComponents = currentStage.entries.map { Component(it.value, it.key) }
@@ -49,12 +59,6 @@ fun getOresRequiredToMakeFuel(availableTransforms: Map<Symbol, SymbolTransform>)
             // Ore cannot be decomposed
             if (component.symbol == "ORE") {
                 nextStage["ORE"] = component.coefficient + nextStage.getOrDefault("ORE", 0)
-                continue
-            }
-            // If we have enough of this component in the wastebin, we can safely cancel it out
-            if (component.coefficient <= wastebin.getOrDefault(component.symbol, 0)) {
-                val amountInWastebin = wastebin[component.symbol] ?: error("Component coefficient less than 0: $component")
-                wastebin[component.symbol] = amountInWastebin - component.coefficient
                 continue
             }
 
@@ -81,7 +85,49 @@ fun getOresRequiredToMakeFuel(availableTransforms: Map<Symbol, SymbolTransform>)
         currentStage = nextStage
     }
 
-    return currentStage["ORE"] ?: error("Somehow there was no ore at the end.")
+    val oreExpended = currentStage["ORE"] ?: error("Somehow there was no ore at the end.")
+    return oreExpended - calculateWastedOre(availableTransforms, wastebin)
+}
+
+fun calculateWastedOre(availableTransforms: Map<Symbol, SymbolTransform>, wastebin: Map<Symbol, Coefficient>): Int {
+    var wastebinState = wastebin
+
+    while(true) {
+        val newWastebin = mutableMapOf<Symbol, Coefficient>()
+        var performedReduction = false
+
+        for ((symbol, coefficient) in wastebinState) {
+            if (symbol == "ORE") {
+                newWastebin["ORE"] = coefficient
+                continue
+            }
+            val transform = availableTransforms[symbol] ?: error("Transform for symbol $symbol didn't exist!")
+
+            // If we wasted enough to perform the transform in reverse, we could have not expended it in the first place. Decompose.
+            if (coefficient >= transform.output.coefficient) {
+                val amountNotExpended = coefficient % transform.output.coefficient
+                val amountExpended = coefficient - amountNotExpended
+                val decomposedComponent = transform.decomposeFrom(Component(amountExpended, symbol))
+
+                for ((producedCoefficient, producedSymbol) in decomposedComponent) {
+                    newWastebin[producedSymbol] = newWastebin.getOrDefault(producedSymbol, 0) + producedCoefficient
+                }
+                if (amountNotExpended > 0) {
+                    newWastebin[symbol] = newWastebin.getOrDefault(symbol, 0) + amountNotExpended
+                }
+                performedReduction = true
+            } else {
+                // Otherwise, just add in the symbol to what's already there. Could be used later.
+                newWastebin[symbol] = newWastebin.getOrDefault(symbol, 0) + coefficient
+            }
+        }
+
+        // Swap the wastebin state. If we didn't decompose anything we're done.
+        wastebinState = newWastebin
+        if (!performedReduction) break
+    }
+
+    return wastebinState["ORE"] ?: 0
 }
 
 fun nextHighestMultipleOf(factor: Int, from: Int) = from + (factor - (from % factor))
